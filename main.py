@@ -51,12 +51,17 @@ def save_to_csv(results, api_key, file_name):
 
 # Main program
 if __name__ == "__main__":
-    API_KEY = "YOUR_API_KEY"  # Replace YOUR_API_KEY with your actual API key
-    LOCATION = "49.00,7.00"  # Coordinates
-    RADIUS = 20000  # Search within a 20 km radius
-    KEYWORD = "italian"
-    PLACE_TYPE = "restaurant"
-    CSV_FILE_NAME = "italian_restaurants.csv"
+    API_KEY = input("Enter your API Key: ")
+    LOCATION = input("Enter the coordinates (latitude,longitude): ")
+    RADIUS = int(input("Enter the search radius (in meters): "))
+    KEYWORD = input("Enter the keyword: ")
+    PLACE_TYPE = input("Enter the place type: ")
+
+    latitude, longitude = LOCATION.split(',')
+    first_two_digits_latitude = latitude[:2]
+    first_two_digits_longitude = longitude[:2]
+
+    CSV_FILE_NAME = f"{first_two_digits_latitude}_{first_two_digits_longitude}_{KEYWORD}_{PLACE_TYPE}.csv"
 
     all_results = []
     next_page_token = None
