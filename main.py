@@ -2,7 +2,7 @@ import requests
 import csv
 import time
 
-# Funktion, um nahe gelegene Orte basierend auf den angegebenen Parametern zu suchen
+# Function to search for nearby places based on the given parameters
 def search_nearby_places(api_key, location, radius, keyword, place_type, next_page_token=None):
     base_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 
@@ -20,7 +20,7 @@ def search_nearby_places(api_key, location, radius, keyword, place_type, next_pa
     response = requests.get(base_url, params=params)
     return response.json()
 
-# Funktion, um Details zu einem Ort anhand seiner place_id abzurufen
+# Function to retrieve details about a place using its place_id
 def get_place_details(api_key, place_id):
     base_url = "https://maps.googleapis.com/maps/api/place/details/json"
 
@@ -33,11 +33,11 @@ def get_place_details(api_key, place_id):
     response = requests.get(base_url, params=params)
     return response.json()
 
-# Funktion, um die gesammelten Ergebnisse in eine CSV-Datei zu speichern
+# Function to save the collected results to a CSV file
 def save_to_csv(results, api_key, file_name):
     with open(file_name, "w", encoding="utf-8", newline="") as csvfile:
         csv_writer = csv.writer(csvfile)
-        csv_writer.writerow(["Name", "Adresse", "Telefonnummer"])
+        csv_writer.writerow(["Name", "Address", "Phone Number"])
 
         for result in results:
             name = result["name"]
@@ -45,32 +45,32 @@ def save_to_csv(results, api_key, file_name):
             place_id = result["place_id"]
 
             details = get_place_details(api_key, place_id)
-            phone_number = details.get("result", {}).get("formatted_phone_number", "Nicht verfügbar")
+            phone_number = details.get("result", {}).get("formatted_phone_number", "Not available")
 
             csv_writer.writerow([name, address, phone_number])
 
-# Hauptprogramm
+# Main program
 if __name__ == "__main__":
-    API_KEY = "YOUR_API_KEY"  # YOUR_API_KEY durch den API-Schlüssel ersetzen
-    LOCATION = "49.00,7.00"  # Koordinaten um die gesucht werden soll
-    RADIUS = 20000  # Suche im Umkreis von 20 km
-    KEYWORD = "italienisch"
+    API_KEY = "YOUR_API_KEY"  # Replace YOUR_API_KEY with your actual API key
+    LOCATION = "49.00,7.00"  # Coordinates
+    RADIUS = 20000  # Search within a 20 km radius
+    KEYWORD = "italian"
     PLACE_TYPE = "restaurant"
-    CSV_FILE_NAME = "italienische_restaurants.csv"
+    CSV_FILE_NAME = "italian_restaurants.csv"
 
     all_results = []
     next_page_token = None
 
-    # Schleife, um alle Ergebnisseiten abzurufen
+    # Loop to fetch all result pages
     while True:
         results = search_nearby_places(API_KEY, LOCATION, RADIUS, KEYWORD, PLACE_TYPE, next_page_token)
         all_results.extend(results["results"])
 
         next_page_token = results.get("next_page_token")
         if next_page_token:
-            time.sleep(10)  # Google Maps Places API Verzögerung zwischen aufeinanderfolgenden Anfragen
+            time.sleep(10)  # Google Maps Places API delay between consecutive requests
         else:
             break
 
     save_to_csv(all_results, API_KEY, CSV_FILE_NAME)
-    print(f"Die Ergebnisse wurden in der Datei {CSV_FILE_NAME} gespeichert.")
+    print(f"The results have been saved in the file {CSV_FILE_NAME}.")
